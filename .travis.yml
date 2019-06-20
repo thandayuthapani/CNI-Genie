@@ -30,6 +30,10 @@ env:
 #  -  export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
 #  -  cd $HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
 
+before_install:
+  - cp .netrc ~/.netrc
+  - chmod 600 ~/.netrc
+  
 jobs:
   include:
     - stage: "Test Jobs"
