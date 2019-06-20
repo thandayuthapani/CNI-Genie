@@ -24,11 +24,11 @@ env:
     - ADMREPO=quay.io/huawei-cni-genie/genie-admission-controller
     - POLICYREPO=quay.io/huawei-cni-genie/genie-policy-controller
 
-before_script:
-  -  mkdir -p $HOME/gopath/src/github.com/cni-genie/CNI-Genie
-  -  rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
-  -  export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
-  -  cd $HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
+#before_script:
+#  -  mkdir -p $HOME/gopath/src/github.com/cni-genie/CNI-Genie
+#  -  rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
+#  -  export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
+#  -  cd $HOME/gopath/src/github.com/swx457056/cni-genie/CNI-Genie
 
 jobs:
   include:
