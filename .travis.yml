@@ -5,10 +5,6 @@ go:
   - 1.x
   - master
 
-script:
-  - make
-  - make test print=y
-
 # TODO (Karun): This works only if travis has k8s environment. Hence commenting it for now.
 #install:
 #    - go get -v github.com/onsi/ginkgo/ginkgo
@@ -27,6 +23,15 @@ env:
     - PLUGINREPO=quay.io/huawei-cni-genie/genie-plugin
     - ADMREPO=quay.io/huawei-cni-genie/genie-admission-controller
     - POLICYREPO=quay.io/huawei-cni-genie/genie-policy-controller
+jobs:
+  include:
+    - stage: "Test Jobs"
+      script: make
+      name: "builds genie"
+    - script: make test print=y
+      name: "unit test genie"
+    - script: make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
+      name: "e2e-test"
 
 after_success:
   - docker --version
