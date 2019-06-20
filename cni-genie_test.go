@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 )
-
+//Testing cmd Add
 func TestCmdAdd(t *testing.T) {
 	conf := utils.GenieConf{
 		NetConf: types.NetConf{
