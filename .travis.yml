@@ -5,8 +5,6 @@ go:
   - 1.x
   - master
 
-go_import_path: cni-genie/CNI-Genie
-
 # TODO (Karun): This works only if travis has k8s environment. Hence commenting it for now.
 #install:
 #    - go get -v github.com/onsi/ginkgo/ginkgo
