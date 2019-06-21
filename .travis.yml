@@ -42,6 +42,23 @@ jobs:
         - make test print=y
 
     - stage: E2E Tests
+      before_script:
+          - sudo apt-get update && sudo apt-get install -y apt-transport-https
+          - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+          - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+          - sudo apt-get update
+          - sudo apt-get install -y kubelet kubeadm kubectl
+          - sudo apt-mark hold kubelet kubeadm kubectl
+          - sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+          - sleep 20
+          - mkdir -p $HOME/.kube
+          - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+          - sudo chown $(id -u):$(id -g) $HOME/.kube/config
+          - kubectl taint nodes --all node-role.kubernetes.io/master-
+          - kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+          - sleep 20
+          - kubectl get nodes
+
       script:
         - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
 
