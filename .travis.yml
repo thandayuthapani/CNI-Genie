@@ -34,12 +34,18 @@ before_script:
 jobs:
   include:
     - stage: "Test Jobs"
-      script: make
-      name: "builds genie"
-    - script: make test print=y
-      name: "unit test genie"
-    - script: make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
-      name: "e2e-test"
+      script:
+        - make
+
+    - stage: Unit Test
+      script:
+        - make test print=y
+
+    - stage: E2E Tests
+      script:
+        - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
+
+
 
 after_success:
   - docker --version
