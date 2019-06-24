@@ -32,12 +32,12 @@ before_script:
 
 jobs:
   include:
-    - stage: "Test Jobs"
-      script:
-        - make
-    - stage: Unit Test
-      script:
-        - make test print=y
+    #- stage: "Test Jobs"
+      #script:
+       # - make
+    #- stage: Unit Test
+     # script:
+      #  - make test print=y
 
     - stage: E2E Tests
       script:
