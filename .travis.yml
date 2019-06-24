@@ -18,8 +18,7 @@ install: true
 services:
   - docker
 
-go_import_path:
-  - cni-genie/CNI-Genie
+go_import_path: cni-genie/CNI-Genie
 
 env:
   global:
