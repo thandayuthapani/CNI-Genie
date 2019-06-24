@@ -6,7 +6,7 @@ go:
   - master
 
 # TODO (Karun): This works only if travis has k8s environment. Hence commenting it for now.
-install:
+install: true
     - go get -v github.com/onsi/ginkgo/ginkgo
     - go get -v github.com/onsi/gomega
     - export PATH=$PATH:$HOME/gopath/bin
@@ -17,7 +17,6 @@ install:
 services:
   - docker
 
-install: true
 env:
   global:
     - REPO=quay.io/huawei-cni-genie
@@ -36,7 +35,6 @@ jobs:
     - stage: "Test Jobs"
       script:
         - make
-
     - stage: Unit Test
       script:
         - make test print=y
@@ -44,8 +42,8 @@ jobs:
     - stage: E2E Tests
 
       script:
+        - bash scripts/cluster-kube.sh
         - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
-
 
 
 after_success:
