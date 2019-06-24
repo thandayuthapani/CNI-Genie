@@ -22,7 +22,6 @@ go_import_path:
   - cni-genie/CNI-Genie
 
 env:
-  - HOME=/home/travis
   global:
     - REPO=quay.io/huawei-cni-genie
     - PLUGINREPO=quay.io/huawei-cni-genie/genie-plugin
