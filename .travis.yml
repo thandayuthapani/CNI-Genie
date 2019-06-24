@@ -42,12 +42,14 @@ jobs:
     - stage: E2E Tests
       before_script:
           # Download kubectl
+          - sudo su
+          - swapoff -a
           - sudo apt-get update && sudo apt-get install -y apt-transport-https
           - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
           - echo "deb https://apt.kubernetes.io/ kubernetes-trusty main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
           - sudo apt-get update
           #- sudo apt-get install -y kubelet kubeadm kubectl
-          - sudo apt-get install -y kubelet=1.13.5-00 kubeadm=1.13.5-00 kubectl=1.13.5-00
+          - sudo apt-get install -y kubelet kubeadm kubectl
           - sudo apt-mark hold kubelet kubeadm kubectl
           - sudo kubeadm init --pod-network-cidr=10.244.0.0/16
           - sleep 20
