@@ -43,7 +43,7 @@ jobs:
       #  - make test print=y
 
     - stage: E2E Tests
-      before_script:
+      script:
           # Download kubeadm
           - sudo apt-get update && sudo apt-get install -y apt-transport-https
           - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
@@ -60,7 +60,7 @@ jobs:
           - sudo chown $(id -u):$(id -g) $HOME/.kube/config
           - kubectl taint nodes --all node-role.kubernetes.io/master-
           - kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-      script:
+
           - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
 
 
