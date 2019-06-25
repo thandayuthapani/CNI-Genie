@@ -6,6 +6,7 @@ sudo apt-get update
 sudo swapoff -a
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
+kubeadm reset -f
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 sleep 20
 rm -rf $HOME/.kube/
@@ -15,6 +16,6 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chmod 777 $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl taint nodes --all node-role.kubernetes.io/master-
-#kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl apply -f https://raw.githubusercontent.com/cni-genie/CNI-Genie/master/conf/1.8/genie-complete.yaml
