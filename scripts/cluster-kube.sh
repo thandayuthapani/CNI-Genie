@@ -3,10 +3,9 @@ sudo apt-get update && sudo apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
+sudo swapoff -a
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
-kubeadm reset
-y
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 sleep 20
 rm -rf $HOME/.kube/
