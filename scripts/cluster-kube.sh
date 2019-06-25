@@ -6,7 +6,7 @@ sudo apt-get update
 sudo swapoff -a
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
-kubeadm reset -f
+sudo kubeadm reset -f
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 sleep 20
 rm -rf $HOME/.kube/
