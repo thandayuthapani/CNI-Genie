@@ -238,7 +238,7 @@ var _ = Describe("CNIGenie", func() {
 	//		})
 	//	})
 	//})
-s
+
 	Describe("Add nocni networking for Pod", func() {
 		glog.Info("Inside Check for adding nocni networking")
 		Context("using cni-genie for configuring nocni CNI", func() {
