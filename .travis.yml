@@ -8,9 +8,9 @@ go:
 
 # TODO (Karun): This works only if travis has k8s environment. Hence commenting it for now.
 install: true
-    - go get -v github.com/onsi/ginkgo/ginkgo
-    - go get -v github.com/onsi/gomega
-    - export PATH=$PATH:$HOME/gopath/bin
+    #- go get -v github.com/onsi/ginkgo/ginkgo
+    #- go get -v github.com/onsi/gomega
+    #- export PATH=$PATH:$HOME/gopath/bin
 
 # TODO (Karun): This works only if travis has k8s environment. Hence commenting it for now.
 # script: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --compilers=2
@@ -64,7 +64,6 @@ jobs:
           - kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
           - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
-
 
 after_success:
   - docker --version
