@@ -54,6 +54,10 @@ jobs:
         - kubectl get pods
         - sleep 30
         - kubectl describe pods nginx-weave
+        - sleep 20
+        - kubectl create -f sampleyamls/pod-flannel.yaml
+        - sleep 30
+        - kubectl describe pods nginx-flannel
 
 after_success:
   - docker --version
