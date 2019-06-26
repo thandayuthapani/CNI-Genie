@@ -995,20 +995,20 @@ var _ = BeforeSuite(func() {
 var _ = AfterSuite(func() {
 
 	//Delete crd network-attachment-definitions.k8s.cni.cncf.io
-	err := apiextensionsclient.ApiextensionsV1beta1().CustomResourceDefinitions().Delete(NetAttachDef, &metav1.DeleteOptions{})
-	if err != nil {
-		panic(err)
-	}
-	//delete namespace network
-	err = clientset.CoreV1().Namespaces().Delete(CRD_TEST_NAMESPACE, &metav1.DeleteOptions{})
-	//delete crd logicalnetworks
-	err = apiextensionsclient.ApiextensionsV1beta1().CustomResourceDefinitions().Delete(NetworkCRD, &metav1.DeleteOptions{})
-	if err != nil {
-		panic(err)
-	}
-	err = clientset.CoreV1().Pods("default").DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
+	//err := apiextensionsclient.ApiextensionsV1beta1().CustomResourceDefinitions().Delete(NetAttachDef, &metav1.DeleteOptions{})
+	//if err != nil {
+	//	panic(err)
+	//}
+	////delete namespace network
+	//err = clientset.CoreV1().Namespaces().Delete(CRD_TEST_NAMESPACE, &metav1.DeleteOptions{})
+	////delete crd logicalnetworks
+	//err = apiextensionsclient.ApiextensionsV1beta1().CustomResourceDefinitions().Delete(NetworkCRD, &metav1.DeleteOptions{})
+	//if err != nil {
+	//	panic(err)
+	//}
+	//err = clientset.CoreV1().Pods("default").DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
 	// Delete namespace
-	err = clientset.CoreV1().Namespaces().Delete(TEST_NAMESPACE, &metav1.DeleteOptions{})
+	err := clientset.CoreV1().Namespaces().Delete(TEST_NAMESPACE, &metav1.DeleteOptions{})
 	// Delete all pods
 	err = clientset.CoreV1().Pods(TEST_NAMESPACE).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
 	if err != nil {
