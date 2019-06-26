@@ -46,6 +46,8 @@ jobs:
       script:
         - chmod +x scripts/cluster-kube.sh
         - bash scripts/cluster-kube.sh
+        - sleep 30
+        - kubectl get nodes
         - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
 
 after_success:
