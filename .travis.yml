@@ -48,8 +48,8 @@ jobs:
         - bash scripts/cluster-kube.sh
         - sleep 30
         - kubectl get nodes
-        - chmod +x plugins_install.sh -all
-        - bash plugins_install.sh
+        - chmod +x plugins_install.sh
+        - bash plugins_install.sh -all
         - sleep 50
         #- make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
         - kubectl create -f sampleyamls/pod-weave.yaml
