@@ -52,6 +52,8 @@ jobs:
         - kubectl create -f sampleyamls/pod-weave.yaml
         - sleep 30
         - kubectl get pods
+        - sleep 30
+        - kubectl describe pods nginx-weave
 
 after_success:
   - docker --version
