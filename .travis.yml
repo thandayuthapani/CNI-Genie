@@ -51,10 +51,11 @@ jobs:
         - chmod +x plugins_install.sh
         - bash plugins_install.sh -all
         - sleep 50
-        #- make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
+        - kubectl get pods --all-namespaces
+        - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
         - kubectl create -f sampleyamls/pod-weave.yaml
         - sleep 30
-        - kubectl get podsx
+        - kubectl get pods
         - sleep 30
         - kubectl describe pods nginx-weave
         - sleep 20
