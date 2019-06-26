@@ -49,6 +49,9 @@ jobs:
         - sleep 30
         - kubectl get nodes
         - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
+        - kubectl create -f sampleyamls/pod-weave.yaml
+        - sleep 30
+        - kubectl get pods
 
 after_success:
   - docker --version
