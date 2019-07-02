@@ -15,7 +15,6 @@ default: plugin policy-controller-binary admission-controller-binary
 
 plugin: clean dist/genie
 
-test-e2e: dist/genie-test
 
 clean:
 	rm -rf dist
@@ -47,9 +46,9 @@ genie-policy:
 	echo "Building genie network policy controller..."
 	cd controllers/network-policy-controller && make policy-controller
 
-# Build the genie cni plugin tests
-dist/genie-test: $(TEST_SRCFILES)
-	@GOPATH=$(GO_PATH) CGO_ENABLED=0 ETCD_IP=127.0.0.1 PLUGIN=genie CNI_SPEC_VERSION=0.3.0 go test ./e2e/ -args --testKubeVersion=$(testKubeVersion) --testKubeConfig=$(testKubeConfig)
+.PHONY: e2e
+e2e:
+	./e2e/scripts/e2e.sh
 
 .PHONY: test
 
