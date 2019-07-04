@@ -47,7 +47,8 @@ jobs:
         - bash e2e/scripts/kube-cluster.sh
         - sleep 30
         - make test-e2e testKubeVersion=1.7 testKubeConfig=/etc/kubernetes/admin.conf
-        - kubectl get pods --all-namespaces 
+        - kubectl get pods --all-namespaces | grep calico
+        - kubectl describe pods nginx-calico-2596996162 -ntest
 
 after_success:
   - docker --version
