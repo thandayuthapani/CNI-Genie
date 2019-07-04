@@ -464,14 +464,62 @@ var _ = Describe("CNIGenie", func() {
 			})
 		})
 	})
-	//Describe("Add sriov networking for Pod", func() {
-	//	glog.Info("Inside Check for adding sriov networking")
-	//	Context("using cni-genie for configuring sriov CNI", func() {
-	//		name := fmt.Sprintf("nginx-sriov-%d", rand.Uint32())
+	Describe("Add sriov networking for Pod", func() {
+
+		glog.Info("Inside Check for adding sriov networking")
+		Context("using cni-genie for configuring sriov CNI", func() {
+			name := fmt.Sprintf("nginx-sriov-%d", rand.Uint32())
+
+			It("should succeed sriov networking for pod", func() {
+				Skip("Skip")
+				annots := make(map[string]string)
+				annots["cni"] = "sriov"
+				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:        name,
+						Annotations: annots,
+					},
+					Spec: v1.PodSpec{Containers: []v1.Container{{
+						Name:            fmt.Sprintf("container-%s", name),
+						Image:           "nginx:latest",
+						ImagePullPolicy: "IfNotPresent",
+					}}},
+				})
+
+				Expect(err).NotTo(HaveOccurred())
+
+				By("Waiting for the sriov pod to have running status")
+				By("Waiting 10 seconds")
+				time.Sleep(time.Duration(10 * time.Second))
+				pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+				Expect(err).NotTo(HaveOccurred())
+				glog.Info("pod status =", string(pod.Status.Phase))
+				Expect(string(pod.Status.Phase)).To(Equal("Running"))
+
+				By("Pod was in Running state... Time to delete the sriov pod now...")
+				err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
+				Expect(err).NotTo(HaveOccurred())
+				By("Waiting 5 seconds")
+				time.Sleep(time.Duration(5 * time.Second))
+				By("Check for sriov pod deletion")
+				_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+				if err != nil && errors.IsNotFound(err) {
+					//do nothing pod has already been deleted
+				}
+				Expect("Success").To(Equal("Success"))
+			})
+		})
+	})
+
+	//Describe(" Check for multi ip from same plugin(ex flannel)", func() {
+	//	glog.Info("Inside Check for multi ip from same plugin(ex flannel")
+	//	Context("using cni genie to configure multiple ip from flannel plugin", func() {
+	//		name := fmt.Sprintf("nginx-multiip-from-flannel-%d", rand.Uint32())
 	//
-	//		It("should succeed sriov networking for pod", func() {
+	//		It("should succeed multi ip preference for pod", func() {
 	//			annots := make(map[string]string)
-	//			annots["cni"] = "sriov"
+	//			annots["cni"] = "flannel,flannel"
+	//
 	//			_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
 	//				ObjectMeta: metav1.ObjectMeta{
 	//					Name:        name,
@@ -486,20 +534,20 @@ var _ = Describe("CNIGenie", func() {
 	//
 	//			Expect(err).NotTo(HaveOccurred())
 	//
-	//			By("Waiting for the sriov pod to have running status")
-	//			By("Waiting 10 seconds")
-	//			time.Sleep(time.Duration(10 * time.Second))
+	//			By("Waiting for the pod to have running status")
+	//			By("Waiting 20 seconds")
+	//			time.Sleep(time.Duration(20 * time.Second))
 	//			pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
 	//			Expect(err).NotTo(HaveOccurred())
 	//			glog.Info("pod status =", string(pod.Status.Phase))
 	//			Expect(string(pod.Status.Phase)).To(Equal("Running"))
 	//
-	//			By("Pod was in Running state... Time to delete the sriov pod now...")
+	//			By("Pod was in Running state... Time to delete the pod now...")
 	//			err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
 	//			Expect(err).NotTo(HaveOccurred())
 	//			By("Waiting 5 seconds")
 	//			time.Sleep(time.Duration(5 * time.Second))
-	//			By("Check for sriov pod deletion")
+	//			By("Check for pod deletion")
 	//			_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
 	//			if err != nil && errors.IsNotFound(err) {
 	//				//do nothing pod has already been deleted
@@ -508,275 +556,229 @@ var _ = Describe("CNIGenie", func() {
 	//		})
 	//	})
 	//})
-
-	Describe(" Check for multi ip from same plugin(ex flannel)", func() {
-		glog.Info("Inside Check for multi ip from same plugin(ex flannel")
-		Context("using cni genie to configure multiple ip from flannel plugin", func() {
-			name := fmt.Sprintf("nginx-multiip-from-flannel-%d", rand.Uint32())
-
-			It("should succeed multi ip preference for pod", func() {
-				annots := make(map[string]string)
-				annots["cni"] = "flannel,flannel"
-
-				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:        name,
-						Annotations: annots,
-					},
-					Spec: v1.PodSpec{Containers: []v1.Container{{
-						Name:            fmt.Sprintf("container-%s", name),
-						Image:           "nginx:latest",
-						ImagePullPolicy: "IfNotPresent",
-					}}},
-				})
-
-				Expect(err).NotTo(HaveOccurred())
-
-				By("Waiting for the pod to have running status")
-				By("Waiting 20 seconds")
-				time.Sleep(time.Duration(20 * time.Second))
-				pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				glog.Info("pod status =", string(pod.Status.Phase))
-				Expect(string(pod.Status.Phase)).To(Equal("Running"))
-
-				By("Pod was in Running state... Time to delete the pod now...")
-				err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				By("Waiting 5 seconds")
-				time.Sleep(time.Duration(5 * time.Second))
-				By("Check for pod deletion")
-				_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				if err != nil && errors.IsNotFound(err) {
-					//do nothing pod has already been deleted
-				}
-				Expect("Success").To(Equal("Success"))
-			})
-		})
-	})
-
-	Describe(" Check for multi ip from same plugin(ex flannel) along with other plugins", func() {
-		glog.Info("Inside Check for multi ip from same plugin(ex flannel along with other plugins")
-		Context("using cni genie to configure multiple ip from flannel plugin and weave plugin", func() {
-			name := fmt.Sprintf("nginx-multiip--%d", rand.Uint32())
-
-			It("should succeed multi ip preference for pod", func() {
-				annots := make(map[string]string)
-				annots["cni"] = "flannel,weave,flannel"
-
-				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:        name,
-						Annotations: annots,
-					},
-					Spec: v1.PodSpec{Containers: []v1.Container{{
-						Name:            fmt.Sprintf("container-%s", name),
-						Image:           "nginx:latest",
-						ImagePullPolicy: "IfNotPresent",
-					}}},
-				})
-
-				Expect(err).NotTo(HaveOccurred())
-
-				By("Waiting for the pod to have running status")
-				By("Waiting 20 seconds")
-				time.Sleep(time.Duration(20 * time.Second))
-				pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				glog.Info("pod status =", string(pod.Status.Phase))
-				Expect(string(pod.Status.Phase)).To(Equal("Running"))
-
-				By("Pod was in Running state... Time to delete the pod now...")
-				err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				By("Waiting 5 seconds")
-				time.Sleep(time.Duration(5 * time.Second))
-				By("Check for pod deletion")
-				_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				if err != nil && errors.IsNotFound(err) {
-					//do nothing pod has already been deleted
-				}
-				Expect("Success").To(Equal("Success"))
-			})
-		})
-	})
-
-	Describe("Verify default plugin case : pod with no annotation attributes", func() {
-		glog.Info("Inside default plugin case : pod with no annotation attributes")
-		Context("using cni-genie for verifying default plugin case : pod with no annotation attributes", func() {
-			name := fmt.Sprintf("nginx-pod-no-annotation-%d", rand.Uint32())
-
-			It("should succeed default(weave) networking for pod", func() {
-				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: name,
-						//Annotations: annots,
-					},
-					Spec: v1.PodSpec{Containers: []v1.Container{{
-						Name:            fmt.Sprintf("container-%s", name),
-						Image:           "nginx:latest",
-						ImagePullPolicy: "IfNotPresent",
-					}}},
-				})
-
-				Expect(err).NotTo(HaveOccurred())
-
-				By("Waiting for the pod to have running status with default plugin(weave)")
-				By("Waiting 10 seconds")
-				time.Sleep(time.Duration(10 * time.Second))
-				pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				glog.Info("pod status =", string(pod.Status.Phase))
-				Expect(string(pod.Status.Phase)).To(Equal("Running"))
-
-				By("Pod was in Running state... Time to delete the pod now...")
-				err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				By("Waiting 5 seconds")
-				time.Sleep(time.Duration(5 * time.Second))
-				By("Check for pod deletion")
-				_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				if err != nil && errors.IsNotFound(err) {
-					//do nothing pod has already been deleted
-				}
-				Expect("Success").To(Equal("Success"))
-			})
-		})
-	})
-
-	Describe("Verify default plugin case : pod with non cni annotations", func() {
-		glog.Info("Inside default plugin case : pod with non cni annotations")
-		Context("using cni-genie for verifying default plugin case : pod with non cni annotations", func() {
-			name := fmt.Sprintf("nginx-pod-non-cni-annotation-%d", rand.Uint32())
-
-			It("should succeed default(weave) networking for pod", func() {
-				annots := make(map[string]string)
-				annots["build"] = "two"
-				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:        name,
-						Annotations: annots,
-					},
-					Spec: v1.PodSpec{Containers: []v1.Container{{
-						Name:            fmt.Sprintf("container-%s", name),
-						Image:           "nginx:latest",
-						ImagePullPolicy: "IfNotPresent",
-					}}},
-				})
-
-				Expect(err).NotTo(HaveOccurred())
-
-				By("Waiting for the pod to have running status with default plugin(weave)")
-				By("Waiting 10 seconds")
-				time.Sleep(time.Duration(10 * time.Second))
-				pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				glog.Info("pod status =", string(pod.Status.Phase))
-				Expect(string(pod.Status.Phase)).To(Equal("Running"))
-
-				By("Pod was in Running state... Time to delete the pod now...")
-				err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				By("Waiting 5 seconds")
-				time.Sleep(time.Duration(5 * time.Second))
-				By("Check for pod deletion")
-				_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				if err != nil && errors.IsNotFound(err) {
-					//do nothing pod has already been deleted
-				}
-				Expect("Success").To(Equal("Success"))
-			})
-		})
-	})
-
-	Describe("Verify default plugin case : pod with blank annotation field", func() {
-		glog.Info("Inside default plugin case : pod with blank annotation field")
-		Context("using cni-genie for verifying default plugin case : pod with blank annotation field", func() {
-			name := fmt.Sprintf("nginx-pod-blank-annotation-%d", rand.Uint32())
-
-			It("should succeed default(weave) networking for pod", func() {
-				annots := make(map[string]string)
-				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:        name,
-						Annotations: annots,
-					},
-					Spec: v1.PodSpec{Containers: []v1.Container{{
-						Name:            fmt.Sprintf("container-%s", name),
-						Image:           "nginx:latest",
-						ImagePullPolicy: "IfNotPresent",
-					}}},
-				})
-
-				Expect(err).NotTo(HaveOccurred())
-
-				By("Waiting for the pod to have running status with default plugin(weave)")
-				By("Waiting 10 seconds")
-				time.Sleep(time.Duration(10 * time.Second))
-				pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				glog.Info("pod status =", string(pod.Status.Phase))
-				Expect(string(pod.Status.Phase)).To(Equal("Running"))
-
-				By("Pod was in Running state... Time to delete the pod now...")
-				err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				By("Waiting 5 seconds")
-				time.Sleep(time.Duration(5 * time.Second))
-				By("Check for pod deletion")
-				_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				if err != nil && errors.IsNotFound(err) {
-					//do nothing pod has already been deleted
-				}
-				Expect("Success").To(Equal("Success"))
-			})
-		})
-	})
-
-	Describe("Verify plugin with interface name case : pod with plugin+interface name case", func() {
-		glog.Info("plugin with interface name case : pod with plugin+interface name case")
-		Context("using cni-genie for verifying plugin with interface name case : pod with plugin+interface name case", func() {
-			name := fmt.Sprintf("nginx-pod-with-ifname-%d", rand.Uint32())
-
-			It("should succeed multinetworking with ifname for pod", func() {
-				annots := make(map[string]string)
-				annots["cni"] = "flannel,weave@eth4,flannel@eth5, flannel"
-				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:        name,
-						Annotations: annots,
-					},
-					Spec: v1.PodSpec{Containers: []v1.Container{{
-						Name:            fmt.Sprintf("container-%s", name),
-						Image:           "nginx:latest",
-						ImagePullPolicy: "IfNotPresent",
-					}}},
-				})
-
-				Expect(err).NotTo(HaveOccurred())
-
-				By("Waiting for the pod to have running status with plugin + ifname")
-				By("Waiting 10 seconds")
-				time.Sleep(time.Duration(10 * time.Second))
-				pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				glog.Info("pod status =", string(pod.Status.Phase))
-				Expect(string(pod.Status.Phase)).To(Equal("Running"))
-
-				By("Pod was in Running state... Time to delete the pod now...")
-				err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
-				Expect(err).NotTo(HaveOccurred())
-				By("Waiting 5 seconds")
-				time.Sleep(time.Duration(5 * time.Second))
-				By("Check for pod deletion")
-				_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
-				if err != nil && errors.IsNotFound(err) {
-					//do nothing pod has already been deleted
-				}
-				Expect("Success").To(Equal("Success"))
-			})
-		})
-	})
+	//
+	//Describe(" Check for multi ip from same plugin(ex flannel) along with other plugins", func() {
+	//	glog.Info("Inside Check for multi ip from same plugin(ex flannel along with other plugins")
+	//	Context("using cni genie to configure multiple ip from flannel plugin and weave plugin", func() {
+	//		name := fmt.Sprintf("nginx-multiip--%d", rand.Uint32())
+	//
+	//		It("should succeed multi ip preference for pod", func() {
+	//			annots := make(map[string]string)
+	//			annots["cni"] = "flannel,weave,flannel"
+	//
+	//			_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
+	//				ObjectMeta: metav1.ObjectMeta{
+	//					Name:        name,
+	//					Annotations: annots,
+	//				},
+	//				Spec: v1.PodSpec{Containers: []v1.Container{{
+	//					Name:            fmt.Sprintf("container-%s", name),
+	//					Image:           "nginx:latest",
+	//					ImagePullPolicy: "IfNotPresent",
+	//				}}},
+	//			})
+	//
+	//			Expect(err).NotTo(HaveOccurred())
+	//
+	//			By("Waiting for the pod to have running status")
+	//			By("Waiting 20 seconds")
+	//			time.Sleep(time.Duration(20 * time.Second))
+	//			pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			glog.Info("pod status =", string(pod.Status.Phase))
+	//			Expect(string(pod.Status.Phase)).To(Equal("Running"))
+	//
+	//			By("Pod was in Running state... Time to delete the pod now...")
+	//			err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			By("Waiting 5 seconds")
+	//			time.Sleep(time.Duration(5 * time.Second))
+	//			By("Check for pod deletion")
+	//			_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			if err != nil && errors.IsNotFound(err) {
+	//				//do nothing pod has already been deleted
+	//			}
+	//			Expect("Success").To(Equal("Success"))
+	//		})
+	//	})
+	//})
+	//
+	//Describe("Verify default plugin case : pod with no annotation attributes", func() {
+	//	glog.Info("Inside default plugin case : pod with no annotation attributes")
+	//	Context("using cni-genie for verifying default plugin case : pod with no annotation attributes", func() {
+	//		name := fmt.Sprintf("nginx-pod-no-annotation-%d", rand.Uint32())
+	//
+	//		It("should succeed default(weave) networking for pod", func() {
+	//			_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
+	//				ObjectMeta: metav1.ObjectMeta{
+	//					Name: name,
+	//					//Annotations: annots,
+	//				},
+	//				Spec: v1.PodSpec{Containers: []v1.Container{{
+	//					Name:            fmt.Sprintf("container-%s", name),
+	//					Image:           "nginx:latest",
+	//					ImagePullPolicy: "IfNotPresent",
+	//				}}},
+	//			})
+	//
+	//			Expect(err).NotTo(HaveOccurred())
+	//
+	//			By("Waiting for the pod to have running status with default plugin(weave)")
+	//			By("Waiting 10 seconds")
+	//			time.Sleep(time.Duration(10 * time.Second))
+	//			pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			glog.Info("pod status =", string(pod.Status.Phase))
+	//			Expect(string(pod.Status.Phase)).To(Equal("Running"))
+	//
+	//			By("Pod was in Running state... Time to delete the pod now...")
+	//			err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			By("Waiting 5 seconds")
+	//			time.Sleep(time.Duration(5 * time.Second))
+	//			By("Check for pod deletion")
+	//			_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			if err != nil && errors.IsNotFound(err) {
+	//				//do nothing pod has already been deleted
+	//			}
+	//			Expect("Success").To(Equal("Success"))
+	//		})
+	//	})
+	//})
+	//
+	//Describe("Verify default plugin case : pod with non cni annotations", func() {
+	//	glog.Info("Inside default plugin case : pod with non cni annotations")
+	//	Context("using cni-genie for verifying default plugin case : pod with non cni annotations", func() {
+	//		name := fmt.Sprintf("nginx-pod-non-cni-annotation-%d", rand.Uint32())
+	//
+	//		It("should succeed default(weave) networking for pod", func() {
+	//			annots := make(map[string]string)
+	//			annots["build"] = "two"
+	//			_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
+	//				ObjectMeta: metav1.ObjectMeta{
+	//					Name:        name,
+	//					Annotations: annots,
+	//				},
+	//				Spec: v1.PodSpec{Containers: []v1.Container{{
+	//					Name:            fmt.Sprintf("container-%s", name),
+	//					Image:           "nginx:latest",
+	//					ImagePullPolicy: "IfNotPresent",
+	//				}}},
+	//			})
+	//
+	//			Expect(err).NotTo(HaveOccurred())
+	//
+	//			By("Waiting for the pod to have running status with default plugin(weave)")
+	//			By("Waiting 10 seconds")
+	//			time.Sleep(time.Duration(10 * time.Second))
+	//			pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			glog.Info("pod status =", string(pod.Status.Phase))
+	//			Expect(string(pod.Status.Phase)).To(Equal("Running"))
+	//
+	//			By("Pod was in Running state... Time to delete the pod now...")
+	//			err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			By("Waiting 5 seconds")
+	//			time.Sleep(time.Duration(5 * time.Second))
+	//			By("Check for pod deletion")
+	//			_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			if err != nil && errors.IsNotFound(err) {
+	//				//do nothing pod has already been deleted
+	//			}
+	//			Expect("Success").To(Equal("Success"))
+	//		})
+	//	})
+	//})
+	//
+	//Describe("Verify default plugin case : pod with blank annotation field", func() {
+	//	glog.Info("Inside default plugin case : pod with blank annotation field")
+	//	Context("using cni-genie for verifying default plugin case : pod with blank annotation field", func() {
+	//		name := fmt.Sprintf("nginx-pod-blank-annotation-%d", rand.Uint32())
+	//
+	//		It("should succeed default(weave) networking for pod", func() {
+	//			annots := make(map[string]string)
+	//			_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
+	//				ObjectMeta: metav1.ObjectMeta{
+	//					Name:        name,
+	//					Annotations: annots,
+	//				},
+	//				Spec: v1.PodSpec{Containers: []v1.Container{{
+	//					Name:            fmt.Sprintf("container-%s", name),
+	//					Image:           "nginx:latest",
+	//					ImagePullPolicy: "IfNotPresent",
+	//				}}},
+	//			})
+	//
+	//			Expect(err).NotTo(HaveOccurred())
+	//
+	//			By("Waiting for the pod to have running status with default plugin(weave)")
+	//			By("Waiting 10 seconds")
+	//			time.Sleep(time.Duration(10 * time.Second))
+	//			pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			glog.Info("pod status =", string(pod.Status.Phase))
+	//			Expect(string(pod.Status.Phase)).To(Equal("Running"))
+	//
+	//			By("Pod was in Running state... Time to delete the pod now...")
+	//			err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			By("Waiting 5 seconds")
+	//			time.Sleep(time.Duration(5 * time.Second))
+	//			By("Check for pod deletion")
+	//			_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			if err != nil && errors.IsNotFound(err) {
+	//				//do nothing pod has already been deleted
+	//			}
+	//			Expect("Success").To(Equal("Success"))
+	//		})
+	//	})
+	//})
+	//
+	//Describe("Verify plugin with interface name case : pod with plugin+interface name case", func() {
+	//	glog.Info("plugin with interface name case : pod with plugin+interface name case")
+	//	Context("using cni-genie for verifying plugin with interface name case : pod with plugin+interface name case", func() {
+	//		name := fmt.Sprintf("nginx-pod-with-ifname-%d", rand.Uint32())
+	//
+	//		It("should succeed multinetworking with ifname for pod", func() {
+	//			annots := make(map[string]string)
+	//			annots["cni"] = "flannel,weave@eth4,flannel@eth5, flannel"
+	//			_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
+	//				ObjectMeta: metav1.ObjectMeta{
+	//					Name:        name,
+	//					Annotations: annots,
+	//				},
+	//				Spec: v1.PodSpec{Containers: []v1.Container{{
+	//					Name:            fmt.Sprintf("container-%s", name),
+	//					Image:           "nginx:latest",
+	//					ImagePullPolicy: "IfNotPresent",
+	//				}}},
+	//			})
+	//
+	//			Expect(err).NotTo(HaveOccurred())
+	//
+	//			By("Waiting for the pod to have running status with plugin + ifname")
+	//			By("Waiting 10 seconds")
+	//			time.Sleep(time.Duration(10 * time.Second))
+	//			pod, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			glog.Info("pod status =", string(pod.Status.Phase))
+	//			Expect(string(pod.Status.Phase)).To(Equal("Running"))
+	//
+	//			By("Pod was in Running state... Time to delete the pod now...")
+	//			err = clientset.CoreV1().Pods(TEST_NAMESPACE).Delete(name, &metav1.DeleteOptions{})
+	//			Expect(err).NotTo(HaveOccurred())
+	//			By("Waiting 5 seconds")
+	//			time.Sleep(time.Duration(5 * time.Second))
+	//			By("Check for pod deletion")
+	//			_, err = clientset.CoreV1().Pods(TEST_NAMESPACE).Get(name, metav1.GetOptions{})
+	//			if err != nil && errors.IsNotFound(err) {
+	//				//do nothing pod has already been deleted
+	//			}
+	//			Expect("Success").To(Equal("Success"))
+	//		})
+	//	})
+	//})
 	Describe("To create logical network crd objects ", func() {
 		It("should succeed crd creation", func() {
 			config, err := clientcmd.BuildConfigFromFlags("", testKubeConfig)

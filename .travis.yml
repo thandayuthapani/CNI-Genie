@@ -44,8 +44,8 @@ jobs:
 
     - stage: E2E Tests
       script:
-        - chmod +x scripts/cluster-kube.sh
-        - bash scripts/cluster-kube.sh
+        - chmod +x scripts/kube-cluster.sh
+        - bash scripts/kube-cluster.sh
         - sleep 30
         - kubectl get nodes
         - chmod +x plugins_install.sh
