@@ -993,6 +993,7 @@ var _ = BeforeSuite(func() {
 	createNamespace(clientset)
 	// Start all the required plugins through shell script
 	cmd := exec.Command("../plugins_install.sh", "-all")
+	fmt.Println("********* cmd **********",cmd)
 	_, err = cmd.Output()
 
 })
@@ -1021,8 +1022,8 @@ var _ = AfterSuite(func() {
 	}
 
 	// Delete all the installed plugins after usage
-	cmd := exec.Command("../plugins_install.sh", "-deleteall")
-	_, err = cmd.Output()
+	//cmd := exec.Command("../plugins_install.sh", "-deleteall")
+	//_, err = cmd.Output()
 
 })
 
