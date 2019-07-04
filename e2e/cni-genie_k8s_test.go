@@ -57,6 +57,7 @@ var _ = Describe("CNIGenie", func() {
 			glog.Info(interfaceName)
 
 			It("should succeed calico networking for pod", func() {
+				Skip("Skip Adding calico networking for Pod")
 				annots := make(map[string]string)
 				annots["cni"] = "calico"
 				//Create a K8s Pod with calico cni
@@ -154,6 +155,7 @@ var _ = Describe("CNIGenie", func() {
 			glog.Info(interfaceName)
 
 			It("should succeed weave networking for pod", func() {
+				Skip("Skip Adding weave networking for Pod")
 				annots := make(map[string]string)
 				annots["cni"] = "weave"
 				_, err := clientset.CoreV1().Pods(TEST_NAMESPACE).Create(&v1.Pod{
