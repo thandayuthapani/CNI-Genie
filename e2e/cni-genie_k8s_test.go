@@ -991,7 +991,7 @@ var _ = BeforeSuite(func() {
 	}
 	createNamespace(clientset)
 	// Start all the required plugins through shell script
-	cmd := exec.Command("../plugins_install.sh", "-all")
+	cmd := exec.Command("bash -x plugins_install.sh", "-all")
 	_, err = cmd.Output()
 
 })
