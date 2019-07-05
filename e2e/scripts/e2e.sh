@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd $HOME/gopath/src/github.com/cni-genie/CNI-Genie/
+cd $GOPATH/src/github.com/cni-genie/CNI-Genie
 # Start all the required plugins
 bash -x plugins_install.sh -all
 
