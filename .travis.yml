@@ -6,7 +6,9 @@ go:
   - 1.x
   - master
 
-install: true
+install:
+  - export GOPATH=${TRAVIS_BUILD_DIR}/gopath/src/github.com/cni-genie/CNI-Genie
+
 # TODO (Karun): This works only if travis has k8s environment. Hence commenting it for now.
 #install:
 #    - go get -v github.com/onsi/ginkgo/ginkgo
