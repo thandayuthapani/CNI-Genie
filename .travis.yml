@@ -30,7 +30,6 @@ before_script:
   -  mkdir -p gopath/src/github.com/cni-genie/CNI-Genie
   -  rsync -az ${TRAVIS_BUILD_DIR}/ gopath/src/github.com/cni-genie/CNI-Genie
   -  export TRAVIS_BUILD_DIR=gopath/src/github.com/cni-genie/CNI-Genie
-  -  export GOPATH="gopath/src/github.com/cni-genie/CNI-Genie
   -  cd gopath/src/github.com/cni-genie/CNI-Genie
 
 jobs:
