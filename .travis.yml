@@ -27,8 +27,6 @@ env:
     - PLUGINREPO=quay.io/huawei-cni-genie/genie-plugin
     - ADMREPO=quay.io/huawei-cni-genie/genie-admission-controller
     - POLICYREPO=quay.io/huawei-cni-genie/genie-policy-controller
-    - GO111MODULE=on
-    - GOFLAGS='-mod vendor'
 
 before_script:
   -  mkdir -p gopath/src/github.com/cni-genie/CNI-Genie
