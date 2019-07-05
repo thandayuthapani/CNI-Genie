@@ -46,8 +46,8 @@ jobs:
         - chmod +x e2e/scripts/kube-cluster.sh
         - bash e2e/scripts/kube-cluster.sh
         - sleep 30
-        - chmod +x e2e/scripts/e2e.sh
-        - bash e2e/scripts/e2e.sh
+        - chmod +x e2e.sh
+        - bash -x e2e.sh
 
 
 after_success:
