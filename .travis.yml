@@ -6,8 +6,8 @@ go:
   - 1.x
   - master
 
-install:
-  - export GOPATH=${TRAVIS_BUILD_DIR}/gopath/src/github.com/cni-genie/CNI-Genie
+install: true
+
 
 # TODO (Karun): This works only if travis has k8s environment. Hence commenting it for now.
 #install:
@@ -27,6 +27,8 @@ env:
     - PLUGINREPO=quay.io/huawei-cni-genie/genie-plugin
     - ADMREPO=quay.io/huawei-cni-genie/genie-admission-controller
     - POLICYREPO=quay.io/huawei-cni-genie/genie-policy-controller
+    - GO111MODULE=on
+    - GOFLAGS='-mod vendor'
 
 before_script:
   -  mkdir -p gopath/src/github.com/cni-genie/CNI-Genie
