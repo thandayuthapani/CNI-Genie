@@ -57,7 +57,6 @@ var _ = Describe("CNIGenie", func() {
 			glog.Info(interfaceName)
 
 			It("should succeed calico networking for pod", func() {
-				//Skip("Skip Adding calico networking for Pod")
 				annots := make(map[string]string)
 				annots["cni"] = "calico"
 				//Create a K8s Pod with calico cni
@@ -991,8 +990,11 @@ var _ = BeforeSuite(func() {
 	}
 	createNamespace(clientset)
 	// Start all the required plugins through shell script
-	cmd := exec.Command("bash -x plugins_install.sh", "-all")
+	cmd := exec.Command("bash", "plugins_install.sh -all")
 	_, err = cmd.Output()
+	if err != nil{
+		fmt.Println("Error in executing plugin_install")
+	}
 
 })
 
