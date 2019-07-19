@@ -43,6 +43,8 @@ Install_Romana() {
   fi
 }
 
+
+
 Install_Calico() {
   status=(`kubectl get pod --all-namespaces | grep -E "calico" | awk '{print $4}'`)
   if [ "$status" == "$desiredState" ]; then
