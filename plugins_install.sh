@@ -12,6 +12,8 @@ isWeaveUp=false
 isCalicoUp=false
 isRomanaUp=false
 
+
+
 Install_Flannel() {
   status=(`kubectl get pod --all-namespaces | grep -E "kube-flannel" | awk '{print $4}'`)
   if [ "$status" == "$desiredState" ]; then
